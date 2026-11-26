@@ -143,46 +143,49 @@
 
 <body>
 
-  <a-scene
-    mindar-image="
-      imageTargetSrc: ./assets/targets/targets.mind;
-    "
-    color-space="sRGB"
-    renderer="colorManagement: true"
-    vr-mode-ui="enabled: false"
-    device-orientation-permission-ui="enabled: false">
+<a-scene
+  mindar-image="imageTargetSrc: ./assets/targets/targets.mind; maxTrack: 1;"
+  color-space="sRGB"
+  renderer="colorManagement: true"
+  vr-mode-ui="enabled: false"
+  device-orientation-permission-ui="enabled: false">
 
-    <!-- Camera -->
-   <a-camera
-  position="0 0 0"
-  look-controls="enabled: false">
-</a-camera>
+  <a-camera
+    position="0 0 0"
+    look-controls="enabled: false">
+  </a-camera>
 
-    <!-- Image target -->
-    <a-entity mindar-image-target="targetIndex: 0">
+  <!-- PROJECT 1: TARGET INDEX 0 -->
+  <a-entity
+    id="project1Target"
+    mindar-image-target="targetIndex: 0">
 
-      <!-- Exhibition project 3D model -->
-<a-entity
-  id="projectModel"
-  class="clickable"
-  gltf-model="./assets/models/proyecto1.glb"
-  position="0 0 0.3"
-  rotation="0 180 0"
-  scale="0.2 0.2 0.2">
-</a-entity>
-
-      <!-- Floating text -->
-      <a-text
-        value="Hello, Inventarium!"
-        position="0 0.35 0.3"
-        align="center"
-        color="#FFFFFF"
-        width="2">
-      </a-text>
-
+    <a-entity
+      id="projectModel1"
+      gltf-model="./assets/models/proyecto1.glb"
+      position="0 0 0.3"
+      rotation="0 180 0"
+      scale="0.2 0.2 0.2">
     </a-entity>
 
-  </a-scene>
+  </a-entity>
+
+  <!-- PROJECT 2: TARGET INDEX 1 -->
+  <a-entity
+    id="project2Target"
+    mindar-image-target="targetIndex: 1">
+
+    <a-entity
+      id="projectModel2"
+      gltf-model="./assets/models/proyecto2.glb"
+      position="0 0 0.3"
+      rotation="0 180 0"
+      scale="0.2 0.2 0.2">
+    </a-entity>
+
+  </a-entity>
+
+</a-scene>
   <div id="quizOverlay">
 
   <div class="quizCard" id="quizCard">
@@ -222,96 +225,102 @@
 
 <script>
   const scene = document.querySelector("a-scene");
-  const projectModel = document.querySelector("#projectModel");
 
+  // QUIZ INTERFACE ELEMENTS
   const overlay = document.getElementById("quizOverlay");
   const questionText = document.getElementById("questionText");
   const answerContainer = document.getElementById("answerContainer");
   const feedback = document.getElementById("feedback");
   const progress = document.getElementById("quizProgress");
   const nextButton = document.getElementById("nextButton");
+  const quizTitle = document.getElementById("quizTitle");
 
+  const quizCard = document.getElementById("quizCard");
   const completionScreen =
     document.getElementById("completionScreen");
 
-  // PROJECT 01 QUESTIONS
-  const questions = [
-
-    {
-      question: "What problem does this project aim to solve?",
-
-      answers: [
+  // PROJECT-SPECIFIC CONTENT
+  const projects = {
+    project1: {
+      title: "Project 01",
+      model: document.getElementById("projectModel1"),
+      target: document.getElementById("project1Target"),
+      questions: [
         {
-          text: "Reduce material waste",
-          correct: true
+          question: "What problem does this project aim to solve?",
+          answers: [
+            { text: "Reduce material waste", correct: true },
+            { text: "Improve user comfort", correct: false },
+            { text: "Save storage space", correct: false }
+          ],
+          explanation: "Correct! You discovered the project's main purpose."
         },
         {
-          text: "Improve user comfort",
-          correct: false
-        },
-        {
-          text: "Save storage space",
-          correct: false
+          question: "Which design aspect is most important?",
+          answers: [
+            { text: "Functionality", correct: true },
+            { text: "Decoration", correct: false },
+            { text: "Packaging", correct: false }
+          ],
+          explanation: "Great job! You completed this project's challenge."
         }
-      ],
-
-      explanation: "Correct! You discovered the project's main purpose."
+      ]
     },
 
-    {
-      question: "Which design aspect is most important in this project?",
-
-      answers: [
+    project2: {
+      title: "Project 02",
+      model: document.getElementById("projectModel2"),
+      target: document.getElementById("project2Target"),
+      questions: [
         {
-          text: "Functionality",
-          correct: true
+          question: "Who is the main user of this project?",
+          answers: [
+            { text: "Children", correct: true },
+            { text: "Professional chefs", correct: false },
+            { text: "Gardeners", correct: false }
+          ],
+          explanation: "Correct! You identified the intended user."
         },
         {
-          text: "Decoration",
-          correct: false
-        },
-        {
-          text: "Packaging",
-          correct: false
+          question: "What was a key consideration during its design?",
+          answers: [
+            { text: "Ease of use", correct: true },
+            { text: "High production cost", correct: false },
+            { text: "Complex assembly", correct: false }
+          ],
+          explanation: "Great job! You completed this project's challenge."
         }
-      ],
-
-      explanation: "Great job! You completed both questions."
+      ]
     }
+  };
 
-  ];
-
+  let currentProject = null;
   let currentQuestion = 0;
   let answered = false;
 
-  // SHOW A QUESTION
+  // DISPLAY A QUESTION
   function showQuestion() {
-
     answered = false;
 
-    const question = questions[currentQuestion];
+    const question =
+      currentProject.questions[currentQuestion];
 
     progress.textContent =
       "QUESTION " + (currentQuestion + 1) +
-      " OF " + questions.length;
+      " OF " + currentProject.questions.length;
 
     questionText.textContent = question.question;
-
     answerContainer.innerHTML = "";
-
     feedback.textContent = "";
-
     nextButton.disabled = true;
 
     question.answers.forEach(function(answer) {
-
       const button = document.createElement("button");
 
       button.className = "answer";
       button.textContent = answer.text;
 
       button.addEventListener("click", function() {
-
         if (answered) return;
 
         answered = true;
@@ -319,19 +328,15 @@
         const allAnswers =
           answerContainer.querySelectorAll(".answer");
 
-        allAnswers.forEach(function(button) {
-          button.disabled = true;
+        allAnswers.forEach(function(item) {
+          item.disabled = true;
         });
 
         if (answer.correct) {
-
           button.classList.add("correct");
-
           feedback.textContent = question.explanation;
           feedback.style.color = "green";
-
         } else {
-
           button.classList.add("incorrect");
 
           feedback.textContent =
@@ -340,64 +345,52 @@
 
           feedback.style.color = "red";
 
-          allAnswers.forEach(function(otherButton, index) {
+          allAnswers.forEach(function(item, index) {
             if (question.answers[index].correct) {
-              otherButton.classList.add("correct");
+              item.classList.add("correct");
             }
           });
-
         }
 
         nextButton.disabled = false;
-
       });
 
       answerContainer.appendChild(button);
-
     });
 
     nextButton.textContent =
-      currentQuestion === questions.length - 1
+      currentQuestion === currentProject.questions.length - 1
         ? "Finish"
         : "Continue";
-
   }
 
-  // OPEN QUIZ
-  function openQuiz() {
-
+  // OPEN THE SELECTED PROJECT'S QUIZ
+  function openQuiz(projectId) {
     if (overlay.style.display === "flex") return;
 
+    currentProject = projects[projectId];
     currentQuestion = 0;
 
-    document.getElementById("quizCard").style.display = "block";
-    completionScreen.style.display = "none";
+    quizTitle.textContent = currentProject.title;
 
+    quizCard.style.display = "block";
+    completionScreen.style.display = "none";
     overlay.style.display = "flex";
 
     showQuestion();
-
   }
 
-  // NEXT QUESTION
+  // CONTINUE OR FINISH
   nextButton.addEventListener("click", function() {
-
     if (!answered) return;
 
-    if (currentQuestion < questions.length - 1) {
-
+    if (currentQuestion < currentProject.questions.length - 1) {
       currentQuestion++;
-
       showQuestion();
-
     } else {
-
-      document.getElementById("quizCard").style.display = "none";
-
+      quizCard.style.display = "none";
       completionScreen.style.display = "block";
-
     }
-
   });
 
   // CLOSE QUIZ
@@ -411,55 +404,56 @@
   document.getElementById("finishButton")
     .addEventListener("click", closeQuiz);
 
-  // REPLAY
+  // REPLAY QUIZ
   document.getElementById("replayButton")
     .addEventListener("click", function() {
-
       currentQuestion = 0;
 
       completionScreen.style.display = "none";
-      document.getElementById("quizCard").style.display = "block";
+      quizCard.style.display = "block";
 
       showQuestion();
-
     });
 
-  // DETECT TOUCH ON 3D MODEL
+  // TAP DETECTION FOR BOTH PROJECTS
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
 
   scene.addEventListener("renderstart", function() {
-
     const canvas = scene.renderer.domElement;
 
     canvas.addEventListener("pointerdown", function(event) {
-
-      // Ignore taps while quiz is open
       if (overlay.style.display === "flex") return;
 
       const rect = canvas.getBoundingClientRect();
 
-      const x = (event.clientX - rect.left) / rect.width;
-      const y = (event.clientY - rect.top) / rect.height;
+      pointer.x =
+        ((event.clientX - rect.left) / rect.width) * 2 - 1;
 
-      pointer.x = x * 2 - 1;
-      pointer.y = -(y * 2 - 1);
+      pointer.y =
+        -(((event.clientY - rect.top) / rect.height) * 2 - 1);
 
       raycaster.setFromCamera(pointer, scene.camera);
 
-      const intersections = raycaster.intersectObject(
-        projectModel.object3D,
-        true
-      );
+      // CHECK EACH PROJECT MODEL
+      for (const projectId of Object.keys(projects)) {
+        const project = projects[projectId];
 
-      if (intersections.length > 0) {
-        openQuiz();
+        // Only check models whose marker is currently visible
+        if (!project.target.object3D.visible) continue;
+
+        const intersections = raycaster.intersectObject(
+          project.model.object3D,
+          true
+        );
+
+        if (intersections.length > 0) {
+          openQuiz(projectId);
+          break;
+        }
       }
-
     });
-
   });
-
 </script>
 </body>
 </html>
