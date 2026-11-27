@@ -71,134 +71,389 @@
   font-size: 15px;
   cursor: pointer;
 }
+#quizProgress {
+  color: #888;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+#questionText {
+  font-size: 19px;
+  line-height: 1.4;
+  margin: 20px 0;
+}
+
+#answerContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.answer {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #f5f5f5;
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.answer:disabled {
+  opacity: 1;
+  cursor: default;
+}
+
+.answer.correct {
+  background: #d9f5df;
+  border-color: #37a65b;
+}
+
+.answer.incorrect {
+  background: #ffe0e0;
+  border-color: #d94b4b;
+}
+
+#feedback {
+  min-height: 24px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+#nextButton,
+#replayButton,
+#finishButton {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background: #222;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+#nextButton:disabled {
+  opacity: 0.4;
+}
   </style>
 </head>
 
 <body>
 
-  <a-scene
-    mindar-image="
-      imageTargetSrc: ./assets/targets/targets.mind;
-    "
-    color-space="sRGB"
-    renderer="colorManagement: true"
-    vr-mode-ui="enabled: false"
-    device-orientation-permission-ui="enabled: false">
+<a-scene
+  mindar-image="imageTargetSrc: ./assets/targets/targets.mind; maxTrack: 1;"
+  color-space="sRGB"
+  renderer="colorManagement: true"
+  vr-mode-ui="enabled: false"
+  device-orientation-permission-ui="enabled: false">
 
-    <!-- Camera -->
-   <a-camera
-  position="0 0 0"
-  look-controls="enabled: false">
-</a-camera>
+  <a-camera
+    position="0 0 0"
+    look-controls="enabled: false">
+  </a-camera>
 
-    <!-- Image target -->
-    <a-entity mindar-image-target="targetIndex: 0">
+  <!-- PROJECT 1: TARGET INDEX 0 -->
+  <a-entity
+    id="project1Target"
+    mindar-image-target="targetIndex: 0">
 
-      <!-- Exhibition project 3D model -->
-<a-entity
-  id="projectModel"
-  class="clickable"
-  gltf-model="./assets/models/proyecto1.glb"
-  position="0 0 0.3"
-  rotation="0 180 0"
-  scale="0.2 0.2 0.2">
-</a-entity>
-
-      <!-- Floating text -->
-      <a-text
-        value="Hello, Inventarium!"
-        position="0 0.35 0.3"
-        align="center"
-        color="#FFFFFF"
-        width="2">
-      </a-text>
-
+    <a-entity
+      id="projectModel1"
+      gltf-model="./assets/models/proyecto1.glb"
+      position="0 0 0.3"
+      rotation="0 180 0"
+      scale="0.2 0.2 0.2">
     </a-entity>
 
-  </a-scene>
+  </a-entity>
+
+  <!-- PROJECT 2: TARGET INDEX 1 -->
+  <a-entity
+    id="project2Target"
+    mindar-image-target="targetIndex: 1">
+
+    <a-entity
+      id="projectModel2"
+      gltf-model="./assets/models/proyecto2.glb"
+      position="0 0 0.3"
+      rotation="0 180 0"
+      scale="0.2 0.2 0.2">
+    </a-entity>
+
+  </a-entity>
+
+</a-scene>
   <div id="quizOverlay">
 
-  <div class="quizCard">
+  <div class="quizCard" id="quizCard">
 
     <button id="closeQuiz">✕</button>
 
-    <h2>Project 01</h2>
+    <p id="quizProgress">QUESTION 1 OF 2</p>
 
-    <p>What problem does this project aim to solve?</p>
+    <h2 id="quizTitle">Project 01</h2>
 
-    <button class="answer">A. Reduce material waste</button>
+    <h3 id="questionText"></h3>
 
-    <button class="answer">B. Improve user comfort</button>
-
-    <button class="answer">C. Save storage space</button>
+    <div id="answerContainer"></div>
 
     <p id="feedback"></p>
+
+    <button id="nextButton" disabled>
+      Continue
+    </button>
+
+  </div>
+
+  <div class="quizCard" id="completionScreen"
+       style="display:none;">
+
+    <h2>Congratulations!</h2>
+
+    <p>You completed this project's challenge.</p>
+
+    <button id="replayButton">Play again</button>
+
+    <button id="finishButton">Return to AR</button>
 
   </div>
 
 </div>
+
 <script>
   const scene = document.querySelector("a-scene");
-  const projectModel = document.querySelector("#projectModel");
 
+  // QUIZ INTERFACE ELEMENTS
+  const overlay = document.getElementById("quizOverlay");
+  const questionText = document.getElementById("questionText");
+  const answerContainer = document.getElementById("answerContainer");
+  const feedback = document.getElementById("feedback");
+  const progress = document.getElementById("quizProgress");
+  const nextButton = document.getElementById("nextButton");
+  const quizTitle = document.getElementById("quizTitle");
+
+  const quizCard = document.getElementById("quizCard");
+  const completionScreen =
+    document.getElementById("completionScreen");
+
+  // PROJECT-SPECIFIC CONTENT
+  const projects = {
+    project1: {
+      title: "Project 01",
+      model: document.getElementById("projectModel1"),
+      target: document.getElementById("project1Target"),
+      questions: [
+        {
+          question: "What problem does this project aim to solve?",
+          answers: [
+            { text: "Reduce material waste", correct: true },
+            { text: "Improve user comfort", correct: false },
+            { text: "Save storage space", correct: false }
+          ],
+          explanation: "Correct! You discovered the project's main purpose."
+        },
+        {
+          question: "Which design aspect is most important?",
+          answers: [
+            { text: "Functionality", correct: true },
+            { text: "Decoration", correct: false },
+            { text: "Packaging", correct: false }
+          ],
+          explanation: "Great job! You completed this project's challenge."
+        }
+      ]
+    },
+
+    project2: {
+      title: "Project 02",
+      model: document.getElementById("projectModel2"),
+      target: document.getElementById("project2Target"),
+      questions: [
+        {
+          question: "Who is the main user of this project?",
+          answers: [
+            { text: "Children", correct: true },
+            { text: "Professional chefs", correct: false },
+            { text: "Gardeners", correct: false }
+          ],
+          explanation: "Correct! You identified the intended user."
+        },
+        {
+          question: "What was a key consideration during its design?",
+          answers: [
+            { text: "Ease of use", correct: true },
+            { text: "High production cost", correct: false },
+            { text: "Complex assembly", correct: false }
+          ],
+          explanation: "Great job! You completed this project's challenge."
+        }
+      ]
+    }
+  };
+
+  let currentProject = null;
+  let currentQuestion = 0;
+  let answered = false;
+
+  // DISPLAY A QUESTION
+  function showQuestion() {
+    answered = false;
+
+    const question =
+      currentProject.questions[currentQuestion];
+
+    progress.textContent =
+      "QUESTION " + (currentQuestion + 1) +
+      " OF " + currentProject.questions.length;
+
+    questionText.textContent = question.question;
+    answerContainer.innerHTML = "";
+    feedback.textContent = "";
+    nextButton.disabled = true;
+
+    question.answers.forEach(function(answer) {
+      const button = document.createElement("button");
+
+      button.className = "answer";
+      button.textContent = answer.text;
+
+      button.addEventListener("click", function() {
+        if (answered) return;
+
+        answered = true;
+
+        const allAnswers =
+          answerContainer.querySelectorAll(".answer");
+
+        allAnswers.forEach(function(item) {
+          item.disabled = true;
+        });
+
+        if (answer.correct) {
+          button.classList.add("correct");
+          feedback.textContent = question.explanation;
+          feedback.style.color = "green";
+        } else {
+          button.classList.add("incorrect");
+
+          feedback.textContent =
+            "Not quite! The correct answer is: " +
+            question.answers.find(a => a.correct).text;
+
+          feedback.style.color = "red";
+
+          allAnswers.forEach(function(item, index) {
+            if (question.answers[index].correct) {
+              item.classList.add("correct");
+            }
+          });
+        }
+
+        nextButton.disabled = false;
+      });
+
+      answerContainer.appendChild(button);
+    });
+
+    nextButton.textContent =
+      currentQuestion === currentProject.questions.length - 1
+        ? "Finish"
+        : "Continue";
+  }
+
+  // OPEN THE SELECTED PROJECT'S QUIZ
+  function openQuiz(projectId) {
+    if (overlay.style.display === "flex") return;
+
+    currentProject = projects[projectId];
+    currentQuestion = 0;
+
+    quizTitle.textContent = currentProject.title;
+
+    quizCard.style.display = "block";
+    completionScreen.style.display = "none";
+    overlay.style.display = "flex";
+
+    showQuestion();
+  }
+
+  // CONTINUE OR FINISH
+  nextButton.addEventListener("click", function() {
+    if (!answered) return;
+
+    if (currentQuestion < currentProject.questions.length - 1) {
+      currentQuestion++;
+      showQuestion();
+    } else {
+      quizCard.style.display = "none";
+      completionScreen.style.display = "block";
+    }
+  });
+
+  // CLOSE QUIZ
+  function closeQuiz() {
+    overlay.style.display = "none";
+  }
+
+  document.getElementById("closeQuiz")
+    .addEventListener("click", closeQuiz);
+
+  document.getElementById("finishButton")
+    .addEventListener("click", closeQuiz);
+
+  // REPLAY QUIZ
+  document.getElementById("replayButton")
+    .addEventListener("click", function() {
+      currentQuestion = 0;
+
+      completionScreen.style.display = "none";
+      quizCard.style.display = "block";
+
+      showQuestion();
+    });
+
+  // TAP DETECTION FOR BOTH PROJECTS
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
 
-  scene.addEventListener("renderstart", function () {
-
+  scene.addEventListener("renderstart", function() {
     const canvas = scene.renderer.domElement;
 
-    canvas.addEventListener("pointerdown", function (event) {
+    canvas.addEventListener("pointerdown", function(event) {
+      if (overlay.style.display === "flex") return;
 
-      // Get the camera screen coordinates
       const rect = canvas.getBoundingClientRect();
 
-      const x = (event.clientX - rect.left) / rect.width;
-      const y = (event.clientY - rect.top) / rect.height;
+      pointer.x =
+        ((event.clientX - rect.left) / rect.width) * 2 - 1;
 
-      pointer.x = x * 2 - 1;
-      pointer.y = -(y * 2 - 1);
+      pointer.y =
+        -(((event.clientY - rect.top) / rect.height) * 2 - 1);
 
-      // Cast a ray from the camera
       raycaster.setFromCamera(pointer, scene.camera);
 
-      // Check whether the ray hits the 3D model
-      const intersections = raycaster.intersectObject(
-        projectModel.object3D,
-        true
-      );
+      // CHECK EACH PROJECT MODEL
+      for (const projectId of Object.keys(projects)) {
+        const project = projects[projectId];
 
-      if (intersections.length > 0) {
-  document.getElementById("quizOverlay").style.display = "flex";
-}
+        // Only check models whose marker is currently visible
+        if (!project.target.object3D.visible) continue;
 
+        const intersections = raycaster.intersectObject(
+          project.model.object3D,
+          true
+        );
+
+        if (intersections.length > 0) {
+          openQuiz(projectId);
+          break;
+        }
+      }
     });
-
   });
-  // Close the quiz
-document.getElementById("closeQuiz").addEventListener("click", function () {
-  document.getElementById("quizOverlay").style.display = "none";
-});
-
-// Answer selection
-const answers = document.querySelectorAll(".answer");
-const feedback = document.getElementById("feedback");
-
-answers.forEach(function (answer, index) {
-
-  answer.addEventListener("click", function () {
-
-    if (index === 0) {
-      feedback.textContent = "Correct! Great job!";
-      feedback.style.color = "green";
-    } else {
-      feedback.textContent = "Not quite! Try again.";
-      feedback.style.color = "red";
-    }
-
-  });
-
-});
 </script>
 </body>
 </html>
