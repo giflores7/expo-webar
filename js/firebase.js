@@ -23,7 +23,7 @@ import {
 
 // FIREBASE CONFIGURATION
 const firebaseConfig = {
-  apiKey: "AIzaSyCTmBBp92JcUWZl0OvK0EePO_nPrxWrikU",
+  apiKey:,
   authDomain: "inventarium-ar.firebaseapp.com",
   projectId: "inventarium-ar",
   storageBucket: "inventarium-ar.firebasestorage.app",
