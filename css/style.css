@@ -1,0 +1,217 @@
+  
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+    #quizOverlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.35);
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.quizCard {
+  background: #FAEADD;
+  color: #222023;
+  width: 100%;
+  max-width: 400px;
+  padding: 25px;
+  border-radius: 20px;
+  font-family: 'Trebuchet MS', sans-serif;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+#closeQuiz {
+  display: block;
+  margin-left: auto;
+  border: none;
+  background: transparent;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.quizCard h2 {
+  margin-top: 5px;
+}
+
+.quizCard p {
+  line-height: 1.5;
+}
+
+.answer {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  margin: 10px 0;
+  border: 1px solid #DDAAFF;
+  border-radius: 10px;
+  background: #522A6F;
+  font-size: 15px;
+  cursor: pointer;
+}
+#quizProgress {
+  color: #DDAAFF;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+#questionText {
+  font-size: 19px;
+  line-height: 1.4;
+  margin: 20px 0;
+}
+
+#answerContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.answer {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #DDAAFF;
+  border-radius: 10px;
+  background: #522A6F;
+  color: white;
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.answer:disabled {
+  opacity: 1;
+  cursor: default;
+}
+
+.answer.correct {
+  background: #37a65b;
+  border-color: #d9f5df;
+}
+
+.answer.incorrect {
+  background: #d94b4b;
+  border-color: #ffe0e0;
+}
+
+#feedback {
+  min-height: 24px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+#nextButton,
+#replayButton,
+#finishButton {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background:   #FBCF4F;
+  color: #222023;
+  font-size: 15px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+#nextButton:disabled {
+  opacity: 0.4;
+}
+#exhibitionProgress {
+  position: fixed;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+
+  display: flex;
+  gap: 15px;
+  align-items: center;
+
+  padding: 10px 16px;
+  border-radius: 30px;
+
+  background: #522A6F;
+  color: white;
+
+  font-family: 'Trebuchet MS', sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+#completionMessage {
+  line-height: 1.5;
+  margin: 20px 0;
+}
+
+#welcomeScreen {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.85);
+  font-family: 'Trebuchet MS', sans-serif;
+}
+
+.welcomeCard {
+  width: 100%;
+  max-width: 380px;
+  padding: 30px 24px;
+  background: white;
+  border-radius: 18px;
+  text-align: center;
+}
+
+.welcomeCard h1 {
+  font-family: Garamond, serif;
+  font-size: 25px;
+  margin-bottom: 12px;
+}
+
+.welcomeCard p {
+  color: #4a03bb;
+  line-height: 1.5;
+}
+
+#nicknameInput {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px;
+  margin: 15px 0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+#startButton {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  background: #222;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#startButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+#welcomeError {
+  color: #c62828;
+  font-size: 13px;
+}
