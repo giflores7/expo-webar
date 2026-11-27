@@ -8,170 +8,39 @@
 
   <title>Inventarium WebAR</title>
 
+
   <!-- A-Frame -->
   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
 
   <!-- MindAR Image Tracking -->
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+ 
+  <link rel="stylesheet" href="./css/style.css">
 
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-    }
-    #quizOverlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  background: rgba(0, 0, 0, 0.35);
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  box-sizing: border-box;
-}
-
-.quizCard {
-  background: #FAEADD;
-  color: #222023;
-  width: 100%;
-  max-width: 400px;
-  padding: 25px;
-  border-radius: 20px;
-  font-family: Arial, sans-serif;
-  box-sizing: border-box;
-  text-align: center;
-}
-
-#closeQuiz {
-  display: block;
-  margin-left: auto;
-  border: none;
-  background: transparent;
-  font-size: 24px;
-  cursor: pointer;
-}
-
-.quizCard h2 {
-  margin-top: 5px;
-}
-
-.quizCard p {
-  line-height: 1.5;
-}
-
-.answer {
-  display: block;
-  width: 100%;
-  padding: 14px;
-  margin: 10px 0;
-  border: 1px solid #DDAAFF;
-  border-radius: 10px;
-  background: #522A6F;
-  font-size: 15px;
-  cursor: pointer;
-}
-#quizProgress {
-  color: #DDAAFF;
-  font-size: 12px;
-  letter-spacing: 1px;
-}
-
-#questionText {
-  font-size: 19px;
-  line-height: 1.4;
-  margin: 20px 0;
-}
-
-#answerContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.answer {
-  width: 100%;
-  padding: 14px;
-  border: 1px solid #DDAAFF;
-  border-radius: 10px;
-  background: #522A6F;
-  color: white;
-  font-size: 15px;
-  text-align: left;
-  cursor: pointer;
-}
-
-.answer:disabled {
-  opacity: 1;
-  cursor: default;
-}
-
-.answer.correct {
-  background: #37a65b;
-  border-color: #d9f5df;
-}
-
-.answer.incorrect {
-  background: #d94b4b;
-  border-color: #ffe0e0;
-}
-
-#feedback {
-  min-height: 24px;
-  font-size: 14px;
-  font-weight: bold;
-}
-
-#nextButton,
-#replayButton,
-#finishButton {
-  width: 100%;
-  padding: 14px;
-  border: none;
-  border-radius: 10px;
-  background:   #FBCF4F;
-  color: #222023;
-  font-size: 15px;
-  cursor: pointer;
-  margin-top: 10px;
-}
-
-#nextButton:disabled {
-  opacity: 0.4;
-}
-#exhibitionProgress {
-  position: fixed;
-  top: 15px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1000;
-
-  display: flex;
-  gap: 15px;
-  align-items: center;
-
-  padding: 10px 16px;
-  border-radius: 30px;
-
-  background: rgba(255,255,255,0.92);
-  color: #222;
-
-  font-family: Arial, sans-serif;
-  font-size: 12px;
-  font-weight: bold;
-
-  white-space: nowrap;
-  pointer-events: none;
-}
-
-#completionMessage {
-  line-height: 1.5;
-  margin: 20px 0;
-}
-  </style>
 </head>
 
 <body>
+
+<div id="welcomeScreen">
+  <div class="welcomeCard">
+    <h1>Welcome to Inventarium!</h1>
+    <p>Choose a nickname to join the exhibition leaderboard.</p>
+
+    <input
+      type="text"
+      id="nicknameInput"
+      placeholder="Enter your nickname"
+      maxlength="20"
+      autocomplete="nickname"
+    >
+
+    <button id="startButton" disabled>
+      Loading...
+    </button>
+
+    <p id="welcomeError"></p>
+  </div>
+</div>
 
 <a-scene
   mindar-image="imageTargetSrc: ./assets/targets/targets.mind; maxTrack: 1;"
@@ -268,5 +137,6 @@
 </div>
 <script src="./js/projects.js"></script>
 <script src="./js/ar.js"></script>
+<script type="module" src="./js/firebase.js"></script>
 </body>
 </html>
