@@ -11,7 +11,12 @@ import {
   doc,
   getDoc,
   setDoc,
-  serverTimestamp
+  serverTimestamp,
+  collection,
+  query,
+  orderBy,
+  limit,
+  onSnapshot
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 // FIREBASE CONFIGURATION
@@ -104,6 +109,36 @@ async function saveProjectScore(projectId, newScore) {
 // MAKE SCORE FUNCTION AVAILABLE TO AR.JS
 window.saveProjectScore = saveProjectScore;
 
+// REAL-TIME OVERALL LEADERBOARD
+window.subscribeLeaderboard = function(callback) {
+  const leaderboardQuery = query(
+    collection(db, "leaderboard"),
+    orderBy("totalPoints", "desc"),
+    limit(10)
+  );
+
+  return onSnapshot(
+    leaderboardQuery,
+    function(snapshot) {
+      const entries = snapshot.docs.map(function(document) {
+        const data = document.data();
+
+        return {
+          nickname: data.nickname || "Anonymous",
+          totalPoints: data.totalPoints || 0,
+          completedProjects: data.completedProjects || 0
+        };
+      });
+
+      callback(entries);
+    },
+    function(error) {
+      console.error("Leaderboard loading error:", error);
+      callback(null);
+    }
+  );
+};
+
 // INITIALIZE VISITOR AND WELCOME SCREEN
 window.firebaseReady = (async function () {
   const startButton = document.getElementById("startButton");
@@ -126,19 +161,19 @@ window.firebaseReady = (async function () {
     }
 
     startButton.disabled = false;
-    startButton.textContent = "Start exploring";
+    startButton.textContent = "Comienza a explorar";
 
     startButton.addEventListener("click", async function () {
       const nickname = nicknameInput.value.trim();
 
       if (nickname.length < 2 || nickname.length > 20) {
         welcomeError.textContent =
-          "Please enter a nickname between 2 and 20 characters.";
+          "Por favor, elige un nombre de usuario entre 2 y 20 caracteres.";
         return;
       }
 
       startButton.disabled = true;
-      startButton.textContent = "Saving...";
+      startButton.textContent = "Guardando...";
       welcomeError.textContent = "";
 
       try {
@@ -167,10 +202,10 @@ window.firebaseReady = (async function () {
       } catch (error) {
         console.error("Nickname save error:", error);
         welcomeError.textContent =
-          "Could not save your nickname. Please try again.";
+          "No se pudo guardar el nombre de usuario. Por favor, inténtalo de nuevo.";
 
         startButton.disabled = false;
-        startButton.textContent = "Start exploring";
+        startButton.textContent = "Comienza a explorar";
       }
     });
 

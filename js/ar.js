@@ -76,11 +76,11 @@ function updateProgress() {
   }, 0);
 
   progressText.textContent =
-    "Projects completed: " +
+    "Proyectos completados: " +
     completedCount + "/" + projects.length;
 
   scoreText.textContent =
-    "Points: " + totalScore + "/" + maximumScore;
+    "Puntos: " + totalScore + "/" + maximumScore;
 }
 
 // SAVE LOCAL PROGRESS
@@ -104,8 +104,8 @@ function showQuestion() {
   const question = currentProject.questions[currentQuestion];
 
   progress.textContent =
-    "QUESTION " + (currentQuestion + 1) +
-    " OF " + currentProject.questions.length;
+    "Pregunta" + (currentQuestion + 1) +
+    " de " + currentProject.questions.length;
 
   questionText.textContent = question.question;
   answerContainer.innerHTML = "";
@@ -143,7 +143,7 @@ function showQuestion() {
         button.classList.add("incorrect");
 
         feedback.textContent =
-          "Not quite! The correct answer is: " +
+          "No es correcto. La respuesta correcta es: " +
           question.answers.find(a => a.correct).text;
 
         feedback.style.color = "red";
@@ -163,8 +163,8 @@ function showQuestion() {
 
   nextButton.textContent =
     currentQuestion === currentProject.questions.length - 1
-      ? "Finish"
-      : "Continue";
+      ? "Terminar"
+      : "Continuar";
 }
 
 // OPEN PROJECT QUIZ
@@ -307,3 +307,93 @@ scene.addEventListener("renderstart", function() {
 
 // INITIALIZE PROGRESS DISPLAY
 updateProgress();
+
+// LEADERBOARD INTERFACE
+const leaderboardButton =
+  document.getElementById("leaderboardButton");
+
+const leaderboardOverlay =
+  document.getElementById("leaderboardOverlay");
+
+const closeLeaderboard =
+  document.getElementById("closeLeaderboard");
+
+const leaderboardList =
+  document.getElementById("leaderboardList");
+
+const leaderboardStatus =
+  document.getElementById("leaderboardStatus");
+
+let stopLeaderboardListener = null;
+
+// OPEN LEADERBOARD
+leaderboardButton.addEventListener("click", function() {
+  leaderboardOverlay.style.display = "flex";
+
+  if (stopLeaderboardListener) return;
+
+  if (typeof window.subscribeLeaderboard !== "function") {
+    leaderboardStatus.textContent =
+      "Conexión a la tabla de clasificación no disponible.";
+    return;
+  }
+
+  leaderboardStatus.textContent = "Cargando clasificaciones...";
+
+  stopLeaderboardListener = window.subscribeLeaderboard(
+    function(entries) {
+      if (entries === null) {
+        leaderboardStatus.textContent =
+          "No se pudo cargar la tabla de clasificación. Por favor, inténtalo de nuevo más tarde.";
+        leaderboardList.innerHTML = "";
+        return;
+      }
+
+      leaderboardList.innerHTML = "";
+
+      if (entries.length === 0) {
+        leaderboardStatus.textContent =
+          "No hay puntuaciones aún. ¡Sé el primero en jugar!";
+        return;
+      }
+
+      leaderboardStatus.textContent =
+        "Top " + entries.length + " visitantes";
+
+      entries.forEach(function(entry, index) {
+        const row = document.createElement("div");
+        row.className = "leaderboardEntry";
+
+        const rank = document.createElement("span");
+        rank.className = "leaderboardRank";
+        rank.textContent = "#" + (index + 1);
+
+        const name = document.createElement("span");
+        name.className = "leaderboardName";
+        name.textContent = entry.nickname;
+
+        const points = document.createElement("span");
+        points.className = "leaderboardPoints";
+        points.textContent = entry.totalPoints + " pts";
+
+        row.appendChild(rank);
+        row.appendChild(name);
+        row.appendChild(points);
+
+        leaderboardList.appendChild(row);
+      });
+    }
+  );
+});
+
+// CLOSE LEADERBOARD
+closeLeaderboard.addEventListener("click", function() {
+  leaderboardOverlay.style.display = "none";
+});
+
+// CLOSE WHEN TAPPING OUTSIDE THE CARD
+leaderboardOverlay.addEventListener("click", function(event) {
+  if (event.target === leaderboardOverlay) {
+    leaderboardOverlay.style.display = "none";
+  }
+});

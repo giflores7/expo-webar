@@ -2,7 +2,7 @@
 window.PROJECTS = [
   {
     id: "project1",
-    title: "Project 01",
+    title: "Projecto 01",
     targetIndex: 0,
     targetSelector: "#project1Target",
     modelSelector: "#projectModel1",
@@ -16,28 +16,28 @@ window.PROJECTS = [
           { text: "Ser una familia de luminarias", correct: false },
           { text: "Crear una experiencia usando realidad extendida", correct: false }
         ],
-        explanation: "Great job! You completed this project's challenge."
+        explanation: "¡Correcto! Buen trabajo."
       }
     ]
   },
 
   {
     id: "project2",
-    title: "Project 02",
+    title: "Projecto 02",
     targetIndex: 1,
     targetSelector: "#project2Target",
     modelSelector: "#projectModel2",
 
     questions: [
       {
-        question: "Who is the main user of this project?",
+        question: "¿Quién es el usuario principal de este proyecto?",
         points: 15,
         answers: [
-          { text: "Children", correct: true },
-          { text: "Professional chefs", correct: false },
-          { text: "Gardeners", correct: false }
+          { text: "Niños", correct: false },
+          { text: "Cocineros profesionales", correct: true },
+          { text: "Jardineros", correct: false }
         ],
-        explanation: "Great job! You completed this project's challenge."
+        explanation: "¡Correcto! Buen trabajo."
       }
     ]
   }
