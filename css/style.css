@@ -315,3 +315,37 @@
   font-weight: bold;
   white-space: nowrap;
 }
+
+#leaderboardYourRank {
+  color:#FAEADD;
+  margin: 12px 0 18px;
+  padding: 13px;
+  border-radius: 10px;
+  background: #222023;
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.leaderboardEntry.topOne {
+  background: #fff7df;
+  border-radius: 8px;
+}
+
+.leaderboardEntry.topTwo {
+  background: #ffe9df;
+  border-radius: 8px;
+}
+
+.leaderboardEntry.topThree {
+  background: #ffdfeb;
+  border-radius: 8px;
+}
+
+.leaderboardProjects {
+  display: block;
+  margin-top: 4px;
+  color: #522A6F;
+  font-size: 11px;
+  font-weight: normal;
+}
