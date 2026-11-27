@@ -17,7 +17,7 @@
 
 .quizCard {
   background: #FAEADD;
-  color: #222023;
+  color: #522A6F;
   width: 100%;
   max-width: 400px;
   padding: 25px;
@@ -37,6 +37,7 @@
 }
 
 .quizCard h2 {
+  font-family: Garamond, serif;
   margin-top: 5px;
 }
 
@@ -79,7 +80,7 @@
   border: 1px solid #DDAAFF;
   border-radius: 10px;
   background: #522A6F;
-  color: white;
+  color: #FAEADD;
   font-size: 15px;
   text-align: left;
   cursor: pointer;
@@ -138,7 +139,7 @@
   border-radius: 30px;
 
   background: #522A6F;
-  color: white;
+  color: #FAEADD;
 
   font-family: 'Trebuchet MS', sans-serif;
   font-size: 12px;
@@ -169,19 +170,20 @@
   width: 100%;
   max-width: 380px;
   padding: 30px 24px;
-  background: white;
+  background: #FAEADD;
   border-radius: 18px;
   text-align: center;
 }
 
 .welcomeCard h1 {
   font-family: Garamond, serif;
+  color: #522A6F;
   font-size: 25px;
   margin-bottom: 12px;
 }
 
 .welcomeCard p {
-  color: #4a03bb;
+  color: #522A6F;
   line-height: 1.5;
 }
 
@@ -190,8 +192,9 @@
   box-sizing: border-box;
   padding: 14px;
   margin: 15px 0;
-  border: 1px solid #ccc;
+  border: 1px solid #522A6F;
   border-radius: 8px;
+  background: #DDAAFF;
   font-size: 16px;
 }
 
@@ -200,8 +203,8 @@
   padding: 14px;
   border: none;
   border-radius: 8px;
-  background: #222;
-  color: white;
+  background: #FBCF4F;
+  color: #222023;
   font-size: 16px;
   cursor: pointer;
 }
@@ -214,4 +217,101 @@
 #welcomeError {
   color: #c62828;
   font-size: 13px;
+}
+
+#leaderboardButton {
+  position: fixed;
+  top: 65px;
+  right: 15px;
+  z-index: 1000;
+  padding: 11px 15px;
+  border: none;
+  border-radius: 25px;
+  background: linear-gradient(to right, #FBCF4F, 60%, #F29CB7);
+  color: #522A6F;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#leaderboardOverlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.75);
+  font-family: 'Trebuchet MS', sans-serif;
+}
+
+.leaderboardCard {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 25px 20px;
+  background: linear-gradient(to right, #FBCF4F, 60%, #F29CB7);
+  border-radius: 18px;
+  box-sizing: border-box;
+}
+
+.leaderboardCard h2 {
+  font-family: Garamond, serif;
+  color: #522A6F;
+  margin: 10px 0;
+  text-align: center;
+}
+
+.leaderboardCard > p {
+  text-align: center;
+  color: #522A6F;
+  font-size: 14px;
+}
+
+#closeLeaderboard {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+#leaderboardStatus {
+  margin: 18px 0;
+  text-align: center;
+  font-size: 13px;
+  color: #522A6F;
+}
+
+.leaderboardEntry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 13px 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.leaderboardRank {
+  color: #522A6F;
+  min-width: 35px;
+  font-weight: bold;
+}
+
+.leaderboardName {
+  color: #522A6F;
+  flex: 1;
+  overflow-wrap: anywhere;
+  font-weight: 600;
+}
+
+.leaderboardPoints {
+  color: #522A6F;
+  font-weight: bold;
+  white-space: nowrap;
 }

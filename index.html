@@ -23,13 +23,13 @@
 
 <div id="welcomeScreen">
   <div class="welcomeCard">
-    <h1>Welcome to Inventarium!</h1>
-    <p>Choose a nickname to join the exhibition leaderboard.</p>
+    <h1>¡Bienvenido a Inventarium!</h1>
+    <p>Elige un nombre de usuario para unirte a la leaderboard.</p>
 
     <input
       type="text"
       id="nicknameInput"
-      placeholder="Enter your nickname"
+      placeholder="Nombre de usuario"
       maxlength="20"
       autocomplete="nickname"
     >
@@ -99,9 +99,26 @@
 </a-entity>
 </a-scene>
 <div id="exhibitionProgress">
-  <span id="progressText">Projects completed: 0/2</span>
-  <span id="scoreText">Points: 0/2</span>
+  <span id="progressText">Proyectos completados: 0/2</span>
+  <span id="scoreText">Puntos: 0/2</span>
 </div>
+
+<button id="leaderboardButton">
+Leaderboard 🏆 
+</button>
+
+<div id="leaderboardOverlay">
+  <div class="leaderboardCard">
+    <button id="closeLeaderboard">✕</button>
+
+    <h2>Leaderboard</h2>
+    <p>Mejores visitantes por puntos totales</p>
+
+    <div id="leaderboardStatus">Cargando rankings...</div>
+    <div id="leaderboardList"></div>
+  </div>
+</div>
+
   <div id="quizOverlay">
 
   <div class="quizCard" id="quizCard">
@@ -125,10 +142,10 @@
   </div>
 
   <div class="quizCard" id="completionScreen" style="display:none;">
-  <h2>Challenge completed!</h2>
+  <h2>¡Desafío completado!</h2>
 
   <p id="completionMessage">
-    You completed this project's challenge.
+    Has completado el desafío de este proyecto.
   </p>
   <button id="replayButton">Play again</button>
   <button id="finishButton">Return to AR</button>
