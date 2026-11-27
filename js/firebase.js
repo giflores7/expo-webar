@@ -16,7 +16,9 @@ import {
   query,
   orderBy,
   limit,
-  onSnapshot
+  onSnapshot,
+  getCountFromServer,
+  where
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 // FIREBASE CONFIGURATION
@@ -110,34 +112,101 @@ async function saveProjectScore(projectId, newScore) {
 window.saveProjectScore = saveProjectScore;
 
 // REAL-TIME OVERALL LEADERBOARD
+
+// REAL-TIME OVERALL LEADERBOARD
 window.subscribeLeaderboard = function(callback) {
+  const user = auth.currentUser;
+
+  if (!user) {
+    callback([], null);
+    return function() {};
+  }
+
+  let latestEntries = [];
+  let latestMyRank = null;
+  let leaderboardReady = false;
+  let visitorReady = false;
+
+  let visitorPoints = 0;
+
+  function updatePersonalRank() {
+    if (!leaderboardReady || !visitorReady) return;
+
+    const higherScoresQuery = query(
+      collection(db, "leaderboard"),
+      where("totalPoints", ">", visitorPoints)
+    );
+
+    getCountFromServer(higherScoresQuery)
+      .then(function(countSnapshot) {
+        latestMyRank = countSnapshot.data().count + 1;
+        callback(latestEntries, latestMyRank);
+      })
+      .catch(function(error) {
+        console.error("Could not calculate visitor rank:", error);
+        callback(latestEntries, null);
+      });
+  }
+
+  // Listen to the top 10 visitors.
   const leaderboardQuery = query(
     collection(db, "leaderboard"),
     orderBy("totalPoints", "desc"),
     limit(10)
   );
 
-  return onSnapshot(
+  const unsubscribeLeaderboard = onSnapshot(
     leaderboardQuery,
     function(snapshot) {
-      const entries = snapshot.docs.map(function(document) {
+      latestEntries = snapshot.docs.map(function(document) {
         const data = document.data();
 
         return {
+          uid: document.id,
           nickname: data.nickname || "Anonymous",
           totalPoints: data.totalPoints || 0,
           completedProjects: data.completedProjects || 0
         };
       });
 
-      callback(entries);
+      leaderboardReady = true;
+      updatePersonalRank();
     },
     function(error) {
       console.error("Leaderboard loading error:", error);
-      callback(null);
+      callback(null, null);
     }
   );
+
+  // Listen to the current visitor's own score.
+  const visitorRef = doc(db, "leaderboard", user.uid);
+
+  const unsubscribeVisitor = onSnapshot(
+    visitorRef,
+    function(snapshot) {
+      if (!snapshot.exists()) {
+        visitorReady = true;
+        visitorPoints = 0;
+      } else {
+        visitorReady = true;
+        visitorPoints = snapshot.data().totalPoints || 0;
+      }
+
+      updatePersonalRank();
+    },
+    function(error) {
+      console.error("Personal score loading error:", error);
+    }
+  );
+
+  // Unsubscribe from both listeners when finished.
+  return function() {
+    unsubscribeLeaderboard();
+    unsubscribeVisitor();
+  };
 };
+
+
 
 // INITIALIZE VISITOR AND WELCOME SCREEN
 window.firebaseReady = (async function () {

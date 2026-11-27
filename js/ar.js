@@ -200,9 +200,9 @@ async function finishQuiz() {
   const maximumScore = getMaximumScore(currentProject);
 
   completionMessage.textContent =
-    "You earned " + currentScore + " out of " +
-    maximumScore + " possible points. Your best score for this project is " +
-    bestScore + " points.";
+    "Ganaste " + currentScore + " de " +
+    maximumScore + " puntos posibles. Tu mejor puntuación para este proyecto es " +
+    bestScore + " puntos.";
 
   quizCard.style.display = "none";
   completionScreen.style.display = "block";
@@ -215,20 +215,20 @@ async function finishQuiz() {
         bestScore
       );
 
-      console.log("Shared leaderboard score saved!");
+      console.log("Puntuación guardada en el leaderboard compartido!");
 
     } catch (error) {
-      console.error("Could not update shared leaderboard:", error);
+      console.error("No se pudo actualizar el leaderboard compartido:", error);
 
       completionMessage.textContent +=
-        " Your score is saved on this device, but the shared leaderboard " +
-        "could not be updated. Please check your internet connection.";
+        " Tu puntuación está guardada en este dispositivo, pero el leaderboard " +
+        "compartido no se pudo actualizar. Por favor, verifica tu conexión a internet.";
     }
   } else {
-    console.error("Firebase score function is not available.");
+    console.error("Puntuación no disponible.");
 
     completionMessage.textContent +=
-      " The shared leaderboard is currently unavailable.";
+      " El leaderboard compartido no está disponible.";
   }
 }
 
@@ -254,18 +254,6 @@ document.getElementById("closeQuiz")
 
 document.getElementById("finishButton")
   .addEventListener("click", closeQuiz);
-
-// REPLAY QUIZ
-document.getElementById("replayButton")
-  .addEventListener("click", function() {
-    currentQuestion = 0;
-    currentScore = 0;
-
-    completionScreen.style.display = "none";
-    quizCard.style.display = "block";
-
-    showQuestion();
-  });
 
 // TAP DETECTION
 const raycaster = new THREE.Raycaster();
@@ -308,6 +296,7 @@ scene.addEventListener("renderstart", function() {
 // INITIALIZE PROGRESS DISPLAY
 updateProgress();
 
+
 // LEADERBOARD INTERFACE
 const leaderboardButton =
   document.getElementById("leaderboardButton");
@@ -324,6 +313,9 @@ const leaderboardList =
 const leaderboardStatus =
   document.getElementById("leaderboardStatus");
 
+const leaderboardYourRank =
+  document.getElementById("leaderboardYourRank");
+
 let stopLeaderboardListener = null;
 
 // OPEN LEADERBOARD
@@ -334,18 +326,19 @@ leaderboardButton.addEventListener("click", function() {
 
   if (typeof window.subscribeLeaderboard !== "function") {
     leaderboardStatus.textContent =
-      "Conexión a la tabla de clasificación no disponible.";
+      "Leaderboard connection is unavailable.";
     return;
   }
 
-  leaderboardStatus.textContent = "Cargando clasificaciones...";
+  leaderboardStatus.textContent = "Loading rankings...";
 
   stopLeaderboardListener = window.subscribeLeaderboard(
-    function(entries) {
+    function(entries, myRank) {
       if (entries === null) {
         leaderboardStatus.textContent =
-          "No se pudo cargar la tabla de clasificación. Por favor, inténtalo de nuevo más tarde.";
+          "Could not load the leaderboard. Check your connection.";
         leaderboardList.innerHTML = "";
+        leaderboardYourRank.textContent = "";
         return;
       }
 
@@ -353,35 +346,78 @@ leaderboardButton.addEventListener("click", function() {
 
       if (entries.length === 0) {
         leaderboardStatus.textContent =
-          "No hay puntuaciones aún. ¡Sé el primero en jugar!";
-        return;
+          "No scores yet. Be the first to play!";
+      } else {
+        leaderboardStatus.textContent =
+          "Top " + entries.length + " visitors";
+
+        entries.forEach(function(entry, index) {
+          const row = document.createElement("div");
+          row.className = "leaderboardEntry";
+
+          const rank = document.createElement("span");
+          rank.className = "leaderboardRank";
+
+          // Equal scores share the same rank.
+          const previousEntry = entries[index - 1];
+
+          const rankNumber =
+            previousEntry &&
+            previousEntry.totalPoints === entry.totalPoints
+              ? previousEntry.displayRank
+              : index + 1;
+
+          entry.displayRank = rankNumber;
+
+          const medals = ["🥇", "🥈", "🥉"];
+
+          rank.textContent =
+            rankNumber <= 3
+              ? medals[rankNumber - 1]
+              : "#" + rankNumber;
+
+          const nameContainer = document.createElement("span");
+          nameContainer.className = "leaderboardName";
+
+          const name = document.createElement("span");
+          name.textContent = entry.nickname;
+
+          const projects = document.createElement("span");
+          projects.className = "leaderboardProjects";
+          projects.textContent =
+            entry.completedProjects + " projects completed";
+
+          nameContainer.appendChild(name);
+          nameContainer.appendChild(projects);
+
+          const points = document.createElement("span");
+          points.className = "leaderboardPoints";
+          points.textContent = entry.totalPoints + " pts";
+
+          row.appendChild(rank);
+          row.appendChild(nameContainer);
+          row.appendChild(points);
+
+          if (rankNumber === 1) {
+            row.classList.add("topOne");
+          } else if (rankNumber === 2) {
+            row.classList.add("topTwo");
+          } else if (rankNumber === 3) {
+            row.classList.add("topThree");
+          }
+
+          leaderboardList.appendChild(row);
+        });
       }
 
-      leaderboardStatus.textContent =
-        "Top " + entries.length + " visitantes";
-
-      entries.forEach(function(entry, index) {
-        const row = document.createElement("div");
-        row.className = "leaderboardEntry";
-
-        const rank = document.createElement("span");
-        rank.className = "leaderboardRank";
-        rank.textContent = "#" + (index + 1);
-
-        const name = document.createElement("span");
-        name.className = "leaderboardName";
-        name.textContent = entry.nickname;
-
-        const points = document.createElement("span");
-        points.className = "leaderboardPoints";
-        points.textContent = entry.totalPoints + " pts";
-
-        row.appendChild(rank);
-        row.appendChild(name);
-        row.appendChild(points);
-
-        leaderboardList.appendChild(row);
-      });
+      // SHOW CURRENT VISITOR'S OVERALL RANK
+      if (myRank !== null) {
+        leaderboardYourRank.textContent =
+          "Your position: #" + myRank;
+      } else {
+        leaderboardYourRank.textContent =
+          "Your position could not be calculated.";
+      }
     }
   );
 });
@@ -397,3 +433,4 @@ leaderboardOverlay.addEventListener("click", function(event) {
     leaderboardOverlay.style.display = "none";
   }
 });
+
