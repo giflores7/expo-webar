@@ -23,9 +23,7 @@ import {
 
 // FIREBASE CONFIGURATION
 const firebaseConfig = {
-   env:
-          CI: true
-          API_KEY: ${{ secrets.FIREBASE }}
+ API_KEY: "AIzaSyCTmBBp92JcUWZl0OvK0EePO_nPrxWrikU",
   authDomain: "inventarium-ar.firebaseapp.com",
   projectId: "inventarium-ar",
   storageBucket: "inventarium-ar.firebasestorage.app",
